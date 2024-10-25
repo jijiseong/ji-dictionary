@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "test": "jest",
-    "pub": "turbo run build lint test && changeset version && changeset publish"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
