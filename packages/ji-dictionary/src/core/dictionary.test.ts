@@ -48,12 +48,13 @@ describe('Dictionary 테스트', () => {
     expect(value4).toBe('apple');
   });
 
-  it('should be return undefined about unexpected value.', () => {
+  it('should be throw ts error for unexpected input', () => {
     const dict = new Dictionary({
       apple: '사과',
       melon: '메론',
     });
 
+    // @ts-expect-error - Testing runtime behavior with invalid type
     const value = dict.translate('banana');
     expect(value).toBeUndefined();
   });
