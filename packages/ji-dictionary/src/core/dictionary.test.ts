@@ -1,61 +1,59 @@
 import { describe, expect, it } from '@jest/globals';
 import Dictionary from './dictionary';
 
-describe('Dictionary 테스트', () => {
-  it('should be translate forward', () => {
-    const dict = new Dictionary({ apple: '사과', melon: '메론' });
-
-    const value1 = dict.translate('apple');
-    expect(value1).toBe('사과');
-
-    const value2 = dict.translate('melon');
-    expect(value2).toBe('메론');
+describe('Dictionary test', () => {
+  const dictionary = new Dictionary({
+    apple: {
+      en: 'APPLE',
+      ko: '사과',
+    },
+    melon: {
+      en: 'MELON',
+      ko: '멜론',
+    },
   });
 
-  it('should be translate backward', () => {
-    const dict = new Dictionary({ apple: '사과', melon: '메론' });
+  it('should be return valid word using get method', () => {
+    const enApple = dictionary.get('en').apple;
+    expect(enApple).toBe('APPLE');
 
-    const value1 = dict.translate('사과');
-    expect(value1).toBe('apple');
+    const koApple = dictionary.get('ko').apple;
+    expect(koApple).toBe('사과');
 
-    const value2 = dict.translate('메론');
-    expect(value2).toBe('melon');
+    const enMelon = dictionary.get('en').melon;
+    expect(enMelon).toBe('MELON');
+
+    const koMelon = dictionary.get('ko').melon;
+    expect(koMelon).toBe('멜론');
   });
 
-  it('should be case sensitive. (foward)', () => {
-    const dict = new Dictionary({
-      apple: '사과 소문자',
-      Apple: '사과 대문자',
-    });
+  it("should correctly infer get's input type.", () => {
+    // @ts-expect-error
+    dictionary.get('jp');
 
-    const value1 = dict.translate('apple');
-    expect(value1).toBe('사과 소문자');
-
-    const value2 = dict.translate('Apple');
-    expect(value2).toBe('사과 대문자');
+    // @ts-expect-error
+    dictionary.get('cn');
   });
 
-  it('should be case sensitive. (backward)', () => {
-    const dict = new Dictionary({
-      apple: '사과 소문자',
-      Apple: '사과 대문자',
-    });
-
-    const value3 = dict.translate('사과 대문자');
-    expect(value3).toBe('Apple');
-
-    const value4 = dict.translate('사과 소문자');
-    expect(value4).toBe('apple');
+  it("should correctly infer getTranslator's input type", () => {
+    // @ts-expect-error
+    dictionary.getTranslator('en');
+    // @ts-expect-error
+    dictionary.getTranslator('en-jp');
+    // @ts-expect-error
+    dictionary.getTranslator('enko');
+    // @ts-expect-error
+    dictionary.getTranslator('koen');
   });
 
-  it('should be throw ts error for unexpected input', () => {
-    const dict = new Dictionary({
-      apple: '사과',
-      melon: '메론',
-    });
+  it('should translate', () => {
+    const enToKo = dictionary.getTranslator('en-ko');
+    const koToEn = dictionary.getTranslator('en-ko');
 
-    // @ts-expect-error - Testing runtime behavior with invalid type
-    const value = dict.translate('banana');
-    expect(value).toBeUndefined();
+    const word1 = enToKo.translate('APPLE');
+    expect(word1).toBe('사과');
+
+    const word2 = koToEn.translate('사과');
+    expect(word2).toBe('APPLE');
   });
 });
