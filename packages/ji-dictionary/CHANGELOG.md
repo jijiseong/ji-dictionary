@@ -1,5 +1,11 @@
 # ji-dictionary
 
+## 1.0.3
+
+### Patch Changes
+
+- 92a43ce: improve type interface using type guard
+
 ## 1.0.2
 
 ### Patch Changes
