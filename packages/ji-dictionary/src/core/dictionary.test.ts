@@ -47,13 +47,15 @@ describe('Dictionary test', () => {
   });
 
   it('should translate', () => {
-    const enToKo = dictionary.getTranslator('en-ko');
-    const koToEn = dictionary.getTranslator('en-ko');
+    const translator = dictionary.getTranslator('en-ko');
 
-    const word1 = enToKo.translate('APPLE');
+    const word1 = translator.translate('APPLE');
     expect(word1).toBe('사과');
 
-    const word2 = koToEn.translate('사과');
+    const word2 = translator.translate('사과');
     expect(word2).toBe('APPLE');
+
+    const word3 = translator.translate('BANANA');
+    expect(word3).toBeUndefined();
   });
 });
