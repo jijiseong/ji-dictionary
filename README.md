@@ -26,7 +26,7 @@ yarn add ji-dictionary
 
 ## basic usage
 
-`Dictionary` receives object follwing interface.
+`Dictionary` receives an object follwing the interface.
 
 ```ts
 {
