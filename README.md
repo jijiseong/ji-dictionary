@@ -65,7 +65,7 @@ There is no limit to the number of languages.
 
 ```ts
 dictionary.get('en').apple; // returns 'APPLE'
-dictionary.get('ko').melon; // returns 'MELON'
+dictionary.get('ko').melon; // returns '메론'
 ```
 
 ### getTranslator(languagePair: \`\$\{TLanguage}-\$\{TLanguage}\`): Translator
