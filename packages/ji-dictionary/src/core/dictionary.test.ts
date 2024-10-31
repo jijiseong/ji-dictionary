@@ -2,32 +2,39 @@ import { describe, expect, it } from '@jest/globals';
 import Dictionary from './dictionary';
 
 describe('Dictionary test', () => {
-  const dictionary = new Dictionary({
-    apple: {
-      en: 'APPLE',
-      ko: '사과',
-    },
-    melon: {
-      en: 'MELON',
-      ko: '멜론',
-    },
-  });
+  const createDictionary = () => {
+    const dictionary = new Dictionary({
+      apple: {
+        en: 'APPLE',
+        ko: '사과',
+      },
+      melon: {
+        en: 'MELON',
+        ko: '멜론',
+      },
+    });
+
+    return dictionary;
+  };
 
   it('should be return valid word using get method', () => {
+    const dictionary = createDictionary();
     const enApple = dictionary.get('en').apple;
-    expect(enApple).toBe('APPLE');
+    expect(enApple).toEqual('APPLE');
 
     const koApple = dictionary.get('ko').apple;
-    expect(koApple).toBe('사과');
+    expect(koApple).toEqual('사과');
 
     const enMelon = dictionary.get('en').melon;
-    expect(enMelon).toBe('MELON');
+    expect(enMelon).toEqual('MELON');
 
     const koMelon = dictionary.get('ko').melon;
-    expect(koMelon).toBe('멜론');
+    expect(koMelon).toEqual('멜론');
   });
 
   it("should correctly infer get's input type.", () => {
+    const dictionary = createDictionary();
+
     // @ts-expect-error
     dictionary.get('jp');
 
@@ -36,6 +43,8 @@ describe('Dictionary test', () => {
   });
 
   it("should correctly infer getTranslator's input type", () => {
+    const dictionary = createDictionary();
+
     // @ts-expect-error
     dictionary.getTranslator('en');
     // @ts-expect-error
@@ -44,18 +53,35 @@ describe('Dictionary test', () => {
     dictionary.getTranslator('enko');
     // @ts-expect-error
     dictionary.getTranslator('koen');
+    // @ts-expect-error
+    dictionary.getTranslator('ko-ko');
+    // @ts-expect-error
+    dictionary.getTranslator('en-en');
   });
 
-  it('should translate', () => {
-    const translator = dictionary.getTranslator('en-ko');
+  describe('getTranslator', () => {
+    const testCases = [
+      {
+        description: 'should translate correctly for en-ko translator',
+        locale: 'en-ko' as const,
+        inputs: ['APPLE', '사과', 'BANANA'],
+        expected: ['사과', 'APPLE', undefined],
+      },
+      {
+        description: 'should translate correctly for ko-en translator',
+        locale: 'ko-en' as const,
+        inputs: ['APPLE', '사과', 'BANANA'],
+        expected: ['사과', 'APPLE', undefined],
+      },
+    ];
 
-    const word1 = translator.translate('APPLE');
-    expect(word1).toBe('사과');
-
-    const word2 = translator.translate('사과');
-    expect(word2).toBe('APPLE');
-
-    const word3 = translator.translate('BANANA');
-    expect(word3).toBeUndefined();
+    testCases.forEach(({ description, locale, inputs, expected }) => {
+      it(description, () => {
+        const dictionary = createDictionary();
+        const translator = dictionary.getTranslator(locale);
+        const results = inputs.map((input) => translator.translate(input));
+        expect(results).toEqual(expected);
+      });
+    });
   });
 });

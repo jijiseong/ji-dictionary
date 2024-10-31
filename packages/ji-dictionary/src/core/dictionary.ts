@@ -1,44 +1,28 @@
+import { makePairList } from '../lib/utils';
 import Translator from './translator';
 
-type TDictValue<
-  TLanguage extends string = string,
-  V extends string = string,
-> = Record<TLanguage, V>;
+type ExcludeSameLanguagePairs<T extends string> =
+  T extends `${infer L}-${infer R}` ? (L extends R ? never : T) : never;
 
-type TDictionary<
-  TDictKey extends string = string,
-  TLanguage extends keyof TDictValue = keyof TDictValue,
-  TValue extends TDictValue[keyof TDictValue] = TDictValue[keyof TDictValue],
-> = Record<TDictKey, Record<TLanguage, TValue>>;
-
-type TPair<T extends string, K extends string> = `${T}-${K}`;
+// TPair 타입 정의
+type TPair<T extends string> = ExcludeSameLanguagePairs<`${T}-${T}`>;
 
 class Dictionary<
   TDictKey extends string = string,
-  TLanguage extends keyof TDictValue = string,
-  TWord extends TDictValue[TLanguage] = string,
+  TLanguage extends string = string,
+  TWord extends string = string,
 > {
-  private dictionary: TDictionary<TDictKey, TLanguage, TWord>;
+  private dictionary: Record<TDictKey, Record<TLanguage, TWord>>;
   private translators: Record<string, Translator> = {};
 
-  constructor(dictionary: TDictionary<TDictKey, TLanguage, TWord>) {
+  constructor(dictionary: Record<TDictKey, Record<TLanguage, TWord>>) {
     this.dictionary = dictionary;
 
-    function makeLanguagePairKey(languages: TLanguage[]) {
-      const pairs: [TLanguage, TLanguage][] = [];
-      for (let i = 0; i < languages.length; i++) {
-        for (let j = i + 1; j < languages.length; j++) {
-          pairs.push([languages[i], languages[j]]);
-        }
-      }
-      return pairs;
-    }
-
     const languageWordRecordList =
-      Object.values<Record<TLanguage, TWord>>(dictionary);
+      Object.values<Record<string, TWord>>(dictionary);
 
-    const languages = Object.keys(languageWordRecordList[0]) as TLanguage[];
-    const languagePairList = makeLanguagePairKey(languages);
+    const languages = Object.keys(languageWordRecordList[0]);
+    const languagePairList = makePairList(languages);
 
     languagePairList.forEach(([language1, language2]) => {
       const entries: [TWord, TWord][] = [];
@@ -50,13 +34,14 @@ class Dictionary<
       const translator = new Translator(entries);
 
       this.translators[`${language1}-${language2}`] = translator;
+      this.translators[`${language2}-${language1}`] = translator;
     });
   }
 
   public get(language: TLanguage) {
-    const selectedDict: Record<TDictKey, TWord> = Object.entries<TDictValue>(
-      this.dictionary
-    ).reduce(
+    const selectedDict: Record<TDictKey, TWord> = Object.entries<
+      Record<TLanguage, TWord>
+    >(this.dictionary).reduce(
       (acc, [key, value]) => ({
         ...acc,
         [key]: value[language],
@@ -66,7 +51,14 @@ class Dictionary<
     return selectedDict;
   }
 
-  public getTranslator(languagePair: TPair<TLanguage, TLanguage>) {
+  public getTranslator(languagePair: TPair<TLanguage>): Translator {
+    if (languagePair in this.translators) {
+      return this.translators[languagePair];
+    }
+
+    // const dictEntries = Object.entries<TDictValue>(this.dictionary);
+
+    // dictEntries.map(([dictKey, [language, word]]) => {});
     return this.translators[languagePair];
   }
 
