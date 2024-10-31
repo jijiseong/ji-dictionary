@@ -1,5 +1,11 @@
 # ji-dictionary
 
+## 1.0.5
+
+### Patch Changes
+
+- fix getTranslator and refactor
+
 ## 1.0.4
 
 ### Patch Changes
