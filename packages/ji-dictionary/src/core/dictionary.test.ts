@@ -17,49 +17,51 @@ describe('Dictionary test', () => {
     return dictionary;
   };
 
-  it('should be return valid word using get method', () => {
-    const dictionary = createDictionary();
-    const enApple = dictionary.get('en').apple;
-    expect(enApple).toEqual('APPLE');
+  describe('get method test.', () => {
+    it('should be return valid word using get method', () => {
+      const dictionary = createDictionary();
+      const enApple = dictionary.get('en').apple;
+      expect(enApple).toEqual('APPLE');
 
-    const koApple = dictionary.get('ko').apple;
-    expect(koApple).toEqual('사과');
+      const koApple = dictionary.get('ko').apple;
+      expect(koApple).toEqual('사과');
 
-    const enMelon = dictionary.get('en').melon;
-    expect(enMelon).toEqual('MELON');
+      const enMelon = dictionary.get('en').melon;
+      expect(enMelon).toEqual('MELON');
 
-    const koMelon = dictionary.get('ko').melon;
-    expect(koMelon).toEqual('멜론');
+      const koMelon = dictionary.get('ko').melon;
+      expect(koMelon).toEqual('멜론');
+    });
+
+    it("should correctly infer get's input type.", () => {
+      const dictionary = createDictionary();
+
+      // @ts-expect-error
+      dictionary.get('jp');
+
+      // @ts-expect-error
+      dictionary.get('cn');
+    });
   });
 
-  it("should correctly infer get's input type.", () => {
-    const dictionary = createDictionary();
+  describe('getTranslator test', () => {
+    it("should correctly infer getTranslator's input type", () => {
+      const dictionary = createDictionary();
 
-    // @ts-expect-error
-    dictionary.get('jp');
+      // @ts-expect-error
+      dictionary.getTranslator('en');
+      // @ts-expect-error
+      dictionary.getTranslator('en-jp');
+      // @ts-expect-error
+      dictionary.getTranslator('enko');
+      // @ts-expect-error
+      dictionary.getTranslator('koen');
+      // @ts-expect-error
+      dictionary.getTranslator('ko-ko');
+      // @ts-expect-error
+      dictionary.getTranslator('en-en');
+    });
 
-    // @ts-expect-error
-    dictionary.get('cn');
-  });
-
-  it("should correctly infer getTranslator's input type", () => {
-    const dictionary = createDictionary();
-
-    // @ts-expect-error
-    dictionary.getTranslator('en');
-    // @ts-expect-error
-    dictionary.getTranslator('en-jp');
-    // @ts-expect-error
-    dictionary.getTranslator('enko');
-    // @ts-expect-error
-    dictionary.getTranslator('koen');
-    // @ts-expect-error
-    dictionary.getTranslator('ko-ko');
-    // @ts-expect-error
-    dictionary.getTranslator('en-en');
-  });
-
-  describe('getTranslator', () => {
     const testCases = [
       {
         description: 'should translate correctly for en-ko translator',
