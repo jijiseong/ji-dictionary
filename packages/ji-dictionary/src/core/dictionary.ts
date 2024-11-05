@@ -6,28 +6,33 @@ type ExcludeSameLanguagePairs<T extends string> =
 
 type TPair<T extends string> = ExcludeSameLanguagePairs<`${T}-${T}`>;
 
+type TDictionary<T extends Record<string, Record<string, string>>> = {
+  [K in keyof T]: {
+    readonly [L in keyof T[K]]: T[K][L];
+  };
+};
+
 class Dictionary<
-  TDictKey extends string = string,
-  TLanguage extends string = string,
-  TWord extends string = string,
+  T extends Record<string, Record<string, string>>,
+  TLanguage extends keyof T[keyof T] = keyof T[keyof T],
 > {
-  private dictionary: Record<TDictKey, Record<TLanguage, TWord>>;
+  public data: TDictionary<T>;
   private translators: Record<string, Translator> = {};
 
-  constructor(dictionary: Record<TDictKey, Record<TLanguage, TWord>>) {
-    this.dictionary = dictionary;
+  constructor(dictionary: T) {
+    this.data = dictionary;
 
     const languageWordRecordList =
-      Object.values<Record<string, TWord>>(dictionary);
+      Object.values<Record<string, string>>(dictionary);
 
     const languages = Object.keys(languageWordRecordList[0]);
     const languagePairList = makePairList(languages);
 
     languagePairList.forEach(([language1, language2]) => {
-      const entries: [TWord, TWord][] = [];
+      const entries: [string, string][] = [];
       languageWordRecordList.forEach((languageWordRecord) => {
-        const word1: TWord = languageWordRecord[language1];
-        const word2: TWord = languageWordRecord[language2];
+        const word1 = languageWordRecord[language1];
+        const word2 = languageWordRecord[language2];
         entries.push([word1, word2]);
       });
       const translator = new Translator(entries);
@@ -37,19 +42,22 @@ class Dictionary<
     });
   }
 
-  public get<L extends TLanguage>(language: L) {
-    const selectedDict: Record<TDictKey, Record<TLanguage, TWord>[L]> =
-      Object.entries<Record<TLanguage, TWord>>(this.dictionary).reduce(
+  /**
+   * @deprecated use `data` instead.
+   */
+  public get(language: TLanguage) {
+    const selectedDict: Record<keyof T, Record<TLanguage, string>[TLanguage]> =
+      Object.entries<Record<TLanguage, string>>(this.data).reduce(
         (acc, [key, value]) => ({
           ...acc,
           [key]: value[language],
         }),
-        {} as Record<TDictKey, TWord>
+        {} as Record<keyof T, Record<TLanguage, string>[TLanguage]>
       );
     return selectedDict;
   }
 
-  public getTranslator(languagePair: TPair<TLanguage>): Translator {
+  public getTranslator(languagePair: TPair<TLanguage & string>): Translator {
     return this.translators[languagePair];
   }
 }

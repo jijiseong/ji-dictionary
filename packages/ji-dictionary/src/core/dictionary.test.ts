@@ -1,6 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 import Dictionary from './dictionary';
 
+const a = {
+  a: 'a',
+} as const;
+
+const c = a.a;
+
 describe('Dictionary test', () => {
   const createDictionary = () => {
     const dictionary = new Dictionary({
@@ -12,7 +18,7 @@ describe('Dictionary test', () => {
         en: 'MELON',
         ko: '멜론',
       },
-    });
+    } as const);
 
     return dictionary;
   };
@@ -21,6 +27,7 @@ describe('Dictionary test', () => {
     it('should be return valid word using get method', () => {
       const dictionary = createDictionary();
       const enApple = dictionary.get('en').apple;
+
       expect(enApple).toEqual('APPLE');
 
       const koApple = dictionary.get('ko').apple;
@@ -35,6 +42,8 @@ describe('Dictionary test', () => {
 
     it("should correctly infer get's input type.", () => {
       const dictionary = createDictionary();
+      const appleEn: 'APPLE' = dictionary.data.apple.en;
+      const appleKr: '사과' = dictionary.data.apple.ko;
 
       // @ts-expect-error
       dictionary.get('jp');
@@ -44,7 +53,7 @@ describe('Dictionary test', () => {
     });
   });
 
-  describe('getTranslator test', () => {
+  describe('getTranslator method test', () => {
     it("should correctly infer getTranslator's input type", () => {
       const dictionary = createDictionary();
 
@@ -85,5 +94,19 @@ describe('Dictionary test', () => {
         expect(results).toEqual(expected);
       });
     });
+  });
+
+  it('should infer union type correctly, when get value from dictionary', () => {
+    const dictionary = createDictionary();
+
+    // @ts-expect-error
+    const apple1: '사과' = dictionary.data.apple.en;
+    // @ts-expect-error
+    const apple2: 'BANANA' = dictionary.data.apple.en;
+    // @ts-expect-error
+    const apple4: '메론' = dictionary.data.melon.en;
+
+    const appleEn: 'APPLE' = dictionary.data.apple.en;
+    expect(appleEn).toEqual('APPLE');
   });
 });
