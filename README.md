@@ -59,14 +59,16 @@ In this case,
 
 There is no limit to the number of languages.
 
-## Methods
-
-### get(language: TLanguage): TWord
+## Property
+### data
+It returns input data.
 
 ```ts
-dictionary.get('en').apple; // returns 'APPLE'
-dictionary.get('ko').melon; // returns '메론'
+dictionary.data.apple.en // returns "APPLE"
 ```
+
+
+## Methods
 
 ### getTranslator(languagePair: \`\$\{TLanguage}-\$\{TLanguage}\`): Translator
 
