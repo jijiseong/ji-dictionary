@@ -1,5 +1,11 @@
 # ji-dictionary
 
+## 1.1.0
+
+### Minor Changes
+
+- change data from private to public
+
 ## 1.0.5
 
 ### Patch Changes
