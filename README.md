@@ -48,7 +48,7 @@ const dictionary = new Dictionary({
     en: 'MELON',
     ko: '메론',
   },
-});
+} as const);
 ```
 
 In this case,
