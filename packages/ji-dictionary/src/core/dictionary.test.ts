@@ -23,33 +23,37 @@ describe('Dictionary test', () => {
     return dictionary;
   };
 
-  describe('get method test.', () => {
-    it('should be return valid word using get method', () => {
-      const dictionary = createDictionary();
-      const enApple = dictionary.get('en').apple;
+  describe('create test', () => {
+    it('can create dictionary inclue any type.', () => {
+      const objectIncludeArray = {
+        fruits: {
+          en: ['apple', 'banana'],
+          ko: ['사과', '바나나'],
+        },
+        vegetable: {
+          en: ['cabbage', 'broccoli'],
+          ko: ['양배추', '브로콜리'],
+        },
+      } as const;
 
-      expect(enApple).toEqual('APPLE');
+      const objectIncludeNumber = {
+        fruits: {
+          en: 'one',
+          num: 1,
+        },
+        vegetable: {
+          en: 'two',
+          num: 2,
+        },
+      } as const;
 
-      const koApple = dictionary.get('ko').apple;
-      expect(koApple).toEqual('사과');
+      const createFn = (object: object) => {
+        const dictionaryNumber = new Dictionary(object);
+        return dictionaryNumber;
+      };
 
-      const enMelon = dictionary.get('en').melon;
-      expect(enMelon).toEqual('MELON');
-
-      const koMelon = dictionary.get('ko').melon;
-      expect(koMelon).toEqual('멜론');
-    });
-
-    it("should correctly infer get's input type.", () => {
-      const dictionary = createDictionary();
-      const appleEn: 'APPLE' = dictionary.data.apple.en;
-      const appleKr: '사과' = dictionary.data.apple.ko;
-
-      // @ts-expect-error
-      dictionary.get('jp');
-
-      // @ts-expect-error
-      dictionary.get('cn');
+      expect(() => createFn(objectIncludeArray)).not.toThrowError();
+      expect(() => createFn(objectIncludeNumber)).not.toThrowError();
     });
   });
 

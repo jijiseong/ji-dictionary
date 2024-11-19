@@ -6,14 +6,14 @@ type ExcludeSameLanguagePairs<T extends string> =
 
 type TPair<T extends string> = ExcludeSameLanguagePairs<`${T}-${T}`>;
 
-type TDictionary<T extends Record<string, Record<string, string>>> = {
+type TDictionary<T extends object> = {
   [K in keyof T]: {
     readonly [L in keyof T[K]]: T[K][L];
   };
 };
 
 class Dictionary<
-  T extends Record<string, Record<string, string>>,
+  T extends object,
   TLanguage extends keyof T[keyof T] = keyof T[keyof T],
 > {
   public data: TDictionary<T>;
@@ -22,8 +22,7 @@ class Dictionary<
   constructor(dictionary: T) {
     this.data = dictionary;
 
-    const languageWordRecordList =
-      Object.values<Record<string, string>>(dictionary);
+    const languageWordRecordList = Object.values(dictionary);
 
     const languages = Object.keys(languageWordRecordList[0]);
     const languagePairList = makePairList(languages);
@@ -40,21 +39,6 @@ class Dictionary<
       this.translators[`${language1}-${language2}`] = translator;
       this.translators[`${language2}-${language1}`] = translator;
     });
-  }
-
-  /**
-   * @deprecated use `data` instead.
-   */
-  public get(language: TLanguage) {
-    const selectedDict: Record<keyof T, Record<TLanguage, string>[TLanguage]> =
-      Object.entries<Record<TLanguage, string>>(this.data).reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value[language],
-        }),
-        {} as Record<keyof T, Record<TLanguage, string>[TLanguage]>
-      );
-    return selectedDict;
   }
 
   public getTranslator(languagePair: TPair<TLanguage & string>): Translator {
