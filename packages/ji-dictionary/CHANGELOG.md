@@ -1,5 +1,11 @@
 # ji-dictionary
 
+## 1.1.1
+
+### Patch Changes
+
+- delete get method & enhance type inffer
+
 ## 1.1.0
 
 ### Minor Changes
